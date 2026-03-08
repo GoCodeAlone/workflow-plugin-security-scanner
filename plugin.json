@@ -1,0 +1,21 @@
+{
+    "name": "workflow-plugin-security-scanner",
+    "version": "1.0.0",
+    "description": "Security scanning via semgrep (SAST), trivy (container/deps), and grype (deps)",
+    "author": "GoCodeAlone",
+    "license": "Apache-2.0",
+    "type": "external",
+    "tier": "core",
+    "minEngineVersion": "0.3.0",
+    "keywords": ["security", "scanning", "sast", "semgrep", "trivy", "grype", "vulnerability"],
+    "homepage": "https://github.com/GoCodeAlone/workflow-plugin-security-scanner",
+    "repository": "https://github.com/GoCodeAlone/workflow-plugin-security-scanner",
+    "capabilities": {
+        "configProvider": false,
+        "moduleTypes": [
+            "security.scanner"
+        ],
+        "stepTypes": [],
+        "triggerTypes": []
+    }
+}
