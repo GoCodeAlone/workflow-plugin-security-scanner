@@ -2,7 +2,7 @@ module github.com/GoCodeAlone/workflow-plugin-security-scanner
 
 go 1.26.0
 
-require github.com/GoCodeAlone/workflow v0.0.0
+require github.com/GoCodeAlone/workflow v0.3.30
 
 require (
 	cel.dev/expr v0.25.1 // indirect
@@ -181,5 +181,3 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.45.0 // indirect
 )
-
-replace github.com/GoCodeAlone/workflow => /Users/jon/workspace/workflow
