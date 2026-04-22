@@ -9,6 +9,12 @@ import (
 	sdk "github.com/GoCodeAlone/workflow/plugin/external/sdk"
 )
 
+// Version is set at build time via -ldflags
+// "-X github.com/GoCodeAlone/workflow-plugin-security-scanner/internal.Version=X.Y.Z".
+// Default is a bare semver so plugin loaders that validate semver accept
+// unreleased dev builds; goreleaser overrides with the real release tag.
+var Version = "0.0.0"
+
 // securityScannerPlugin implements sdk.PluginProvider and sdk.ModuleProvider.
 type securityScannerPlugin struct{}
 
@@ -21,7 +27,7 @@ func NewSecurityScannerPlugin() sdk.PluginProvider {
 func (p *securityScannerPlugin) Manifest() sdk.PluginManifest {
 	return sdk.PluginManifest{
 		Name:        "workflow-plugin-security-scanner",
-		Version:     "1.0.0",
+		Version:     Version,
 		Author:      "GoCodeAlone",
 		Description: "Security scanning via semgrep (SAST), trivy (container/deps), and grype (deps)",
 	}
