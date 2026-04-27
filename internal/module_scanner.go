@@ -208,16 +208,32 @@ var _ sdk.ServiceInvoker = (*scannerModule)(nil)
 
 // scanOutputToMap converts a ScanOutput to a map[string]any for gRPC transport.
 func scanOutputToMap(out *ScanOutput) map[string]any {
-	b, _ := json.Marshal(out)
-	var m map[string]any
-	_ = json.Unmarshal(b, &m)
-	// Normalize keys to match what the host expects.
-	if m == nil {
-		m = map[string]any{}
+	findings := make([]any, 0, len(out.Findings))
+	for _, finding := range out.Findings {
+		item := map[string]any{
+			"rule_id":  finding.RuleID,
+			"severity": finding.Severity,
+			"message":  finding.Message,
+			"location": finding.Location,
+		}
+		if finding.Line != 0 {
+			item["line"] = finding.Line
+		}
+		findings = append(findings, item)
 	}
-	m["scanner"] = out.Scanner
-	m["passed_gate"] = out.PassedGate
-	return m
+
+	return map[string]any{
+		"scanner":     out.Scanner,
+		"passed_gate": out.PassedGate,
+		"findings":    findings,
+		"summary": map[string]any{
+			"critical": out.Summary.Critical,
+			"high":     out.Summary.High,
+			"medium":   out.Summary.Medium,
+			"low":      out.Summary.Low,
+			"info":     out.Summary.Info,
+		},
+	}
 }
 
 // --- Argument helpers ---

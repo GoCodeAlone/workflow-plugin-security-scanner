@@ -144,6 +144,39 @@ func TestScannerModule_InvokeMethod_ScanDeps(t *testing.T) {
 	}
 }
 
+func TestScanOutputToMapUsesProtoJSONKeys(t *testing.T) {
+	result := scanOutputToMap(&ScanOutput{
+		Scanner:    "mock",
+		PassedGate: true,
+		Findings: []FindingOutput{{
+			RuleID:   "SEC001",
+			Severity: "high",
+			Message:  "example finding",
+			Location: "main.go",
+			Line:     12,
+		}},
+		Summary: SummaryOutput{High: 1},
+	})
+
+	for _, key := range []string{"Scanner", "PassedGate", "Findings", "Summary"} {
+		if _, ok := result[key]; ok {
+			t.Fatalf("scanOutputToMap emitted Go-style key %q", key)
+		}
+	}
+	for _, key := range []string{"scanner", "passed_gate", "findings", "summary"} {
+		if _, ok := result[key]; !ok {
+			t.Fatalf("scanOutputToMap missing proto JSON key %q", key)
+		}
+	}
+	summary, ok := result["summary"].(map[string]any)
+	if !ok {
+		t.Fatalf("summary = %T, want map[string]any", result["summary"])
+	}
+	if got, _ := summary["high"].(int); got != 1 {
+		t.Fatalf("summary.high = %v, want 1", summary["high"])
+	}
+}
+
 func TestScannerModule_InvokeMethod_UnknownMethod(t *testing.T) {
 	m := &scannerModule{name: "test", sastBackend: &mockBackend{}}
 	_, err := m.InvokeMethod("ScanUnknown", nil)
