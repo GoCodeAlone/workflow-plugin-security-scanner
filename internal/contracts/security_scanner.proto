@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package workflow.plugins.security_scanner.v1;
+
+option go_package = "github.com/GoCodeAlone/workflow-plugin-security-scanner/internal/contracts;contracts";
+
+message ScannerModuleConfig {
+  string sast_backend = 1;
+  string container_backend = 2;
+  string deps_backend = 3;
+  repeated Finding mock_findings = 4;
+  bool mock_passed = 5;
+}
+
+message SASTScanConfig {
+  string scanner = 1;
+  string source_path = 2;
+  repeated string rules = 3;
+  string fail_on_severity = 4;
+  string output_format = 5;
+}
+
+message SASTScanInput {
+  string scanner = 1;
+  string source_path = 2;
+  repeated string rules = 3;
+  string fail_on_severity = 4;
+  string output_format = 5;
+}
+
+message ContainerScanConfig {
+  string scanner = 1;
+  string target_image = 2;
+  string severity_threshold = 3;
+  bool ignore_unfixed = 4;
+  string output_format = 5;
+}
+
+message ContainerScanInput {
+  string scanner = 1;
+  string target_image = 2;
+  string severity_threshold = 3;
+  bool ignore_unfixed = 4;
+  string output_format = 5;
+}
+
+message DepsScanConfig {
+  string scanner = 1;
+  string source_path = 2;
+  string fail_on_severity = 3;
+  string output_format = 4;
+}
+
+message DepsScanInput {
+  string scanner = 1;
+  string source_path = 2;
+  string fail_on_severity = 3;
+  string output_format = 4;
+}
+
+message ScanSASTRequest {
+  string scanner = 1;
+  string source_path = 2;
+  repeated string rules = 3;
+  string fail_on_severity = 4;
+  string output_format = 5;
+}
+
+message ScanContainerRequest {
+  string scanner = 1;
+  string target_image = 2;
+  string severity_threshold = 3;
+  bool ignore_unfixed = 4;
+  string output_format = 5;
+}
+
+message ScanDepsRequest {
+  string scanner = 1;
+  string source_path = 2;
+  string fail_on_severity = 3;
+  string output_format = 4;
+}
+
+message Finding {
+  string rule_id = 1;
+  string severity = 2;
+  string message = 3;
+  string location = 4;
+  int32 line = 5;
+}
+
+message Summary {
+  int32 critical = 1;
+  int32 high = 2;
+  int32 medium = 3;
+  int32 low = 4;
+  int32 info = 5;
+}
+
+message ScanOutput {
+  string scanner = 1;
+  bool passed_gate = 2;
+  repeated Finding findings = 3;
+  Summary summary = 4;
+  string error = 100;
+}

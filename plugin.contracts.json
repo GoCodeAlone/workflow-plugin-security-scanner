@@ -1,0 +1,59 @@
+{
+  "version": "v1",
+  "contracts": [
+    {
+      "kind": "module",
+      "type": "security.scanner",
+      "mode": "strict",
+      "config": "workflow.plugins.security_scanner.v1.ScannerModuleConfig"
+    },
+    {
+      "kind": "step",
+      "type": "step.sast_scan",
+      "mode": "strict",
+      "config": "workflow.plugins.security_scanner.v1.SASTScanConfig",
+      "input": "workflow.plugins.security_scanner.v1.SASTScanInput",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.container_scan",
+      "mode": "strict",
+      "config": "workflow.plugins.security_scanner.v1.ContainerScanConfig",
+      "input": "workflow.plugins.security_scanner.v1.ContainerScanInput",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.deps_scan",
+      "mode": "strict",
+      "config": "workflow.plugins.security_scanner.v1.DepsScanConfig",
+      "input": "workflow.plugins.security_scanner.v1.DepsScanInput",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    },
+    {
+      "kind": "service_method",
+      "serviceName": "security.scanner",
+      "method": "ScanSAST",
+      "mode": "strict",
+      "input": "workflow.plugins.security_scanner.v1.ScanSASTRequest",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    },
+    {
+      "kind": "service_method",
+      "serviceName": "security.scanner",
+      "method": "ScanContainer",
+      "mode": "strict",
+      "input": "workflow.plugins.security_scanner.v1.ScanContainerRequest",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    },
+    {
+      "kind": "service_method",
+      "serviceName": "security.scanner",
+      "method": "ScanDeps",
+      "mode": "strict",
+      "input": "workflow.plugins.security_scanner.v1.ScanDepsRequest",
+      "output": "workflow.plugins.security_scanner.v1.ScanOutput"
+    }
+  ]
+}
