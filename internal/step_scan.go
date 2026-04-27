@@ -24,10 +24,14 @@ func newScanStep(typeName, name string, config map[string]any) (*scanStep, error
 
 func (s *scanStep) Execute(ctx context.Context, _ map[string]any, _ map[string]map[string]any, current map[string]any, _ map[string]any, config map[string]any) (*sdk.StepResult, error) {
 	args := mergeConfigs(s.config, config, current)
+	backend, err := backendFromArgs(args, "mock")
+	if err != nil {
+		return nil, err
+	}
 	module, err := newScannerModule(s.name, map[string]any{
-		"sast_backend":      backendFromArgs(args, "mock"),
-		"container_backend": backendFromArgs(args, "mock"),
-		"deps_backend":      backendFromArgs(args, "mock"),
+		"sast_backend":      backend,
+		"container_backend": backend,
+		"deps_backend":      backend,
 	})
 	if err != nil {
 		return nil, err

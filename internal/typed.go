@@ -14,7 +14,11 @@ import (
 func typedSASTScan() sdk.TypedStepHandler[*contracts.SASTScanConfig, *contracts.SASTScanInput, *contracts.ScanOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.SASTScanConfig, *contracts.SASTScanInput]) (*sdk.TypedStepResult[*contracts.ScanOutput], error) {
 		args := mergeConfigs(sastConfigToMap(req.Config), sastInputToMap(req.Input), req.Current)
-		module, err := newScannerModule("typed-sast-step", map[string]any{"sast_backend": backendFromArgs(args, "mock")})
+		backend, err := backendFromArgs(args, "mock")
+		if err != nil {
+			return nil, err
+		}
+		module, err := newScannerModule("typed-sast-step", map[string]any{"sast_backend": backend})
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +39,11 @@ func typedSASTScan() sdk.TypedStepHandler[*contracts.SASTScanConfig, *contracts.
 func typedContainerScan() sdk.TypedStepHandler[*contracts.ContainerScanConfig, *contracts.ContainerScanInput, *contracts.ScanOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.ContainerScanConfig, *contracts.ContainerScanInput]) (*sdk.TypedStepResult[*contracts.ScanOutput], error) {
 		args := mergeConfigs(containerConfigToMap(req.Config), containerInputToMap(req.Input), req.Current)
-		module, err := newScannerModule("typed-container-step", map[string]any{"container_backend": backendFromArgs(args, "mock")})
+		backend, err := backendFromArgs(args, "mock")
+		if err != nil {
+			return nil, err
+		}
+		module, err := newScannerModule("typed-container-step", map[string]any{"container_backend": backend})
 		if err != nil {
 			return nil, err
 		}
@@ -56,7 +64,11 @@ func typedContainerScan() sdk.TypedStepHandler[*contracts.ContainerScanConfig, *
 func typedDepsScan() sdk.TypedStepHandler[*contracts.DepsScanConfig, *contracts.DepsScanInput, *contracts.ScanOutput] {
 	return func(ctx context.Context, req sdk.TypedStepRequest[*contracts.DepsScanConfig, *contracts.DepsScanInput]) (*sdk.TypedStepResult[*contracts.ScanOutput], error) {
 		args := mergeConfigs(depsConfigToMap(req.Config), depsInputToMap(req.Input), req.Current)
-		module, err := newScannerModule("typed-deps-step", map[string]any{"deps_backend": backendFromArgs(args, "mock")})
+		backend, err := backendFromArgs(args, "mock")
+		if err != nil {
+			return nil, err
+		}
+		module, err := newScannerModule("typed-deps-step", map[string]any{"deps_backend": backend})
 		if err != nil {
 			return nil, err
 		}
@@ -361,9 +373,7 @@ func compactMap(values map[string]any) map[string]any {
 				out[key] = typed
 			}
 		case bool:
-			if typed {
-				out[key] = typed
-			}
+			out[key] = typed
 		default:
 			if value != nil {
 				out[key] = value
@@ -373,12 +383,15 @@ func compactMap(values map[string]any) map[string]any {
 	return out
 }
 
-func backendFromArgs(args map[string]any, fallback string) string {
+func backendFromArgs(args map[string]any, fallback string) (string, error) {
 	scanner := stringArg(args, "scanner")
+	if scanner == "" {
+		return fallback, nil
+	}
 	switch scanner {
 	case "semgrep", "trivy", "grype", "mock":
-		return scanner
+		return scanner, nil
 	default:
-		return fallback
+		return "", fmt.Errorf("unsupported scanner %q", scanner)
 	}
 }

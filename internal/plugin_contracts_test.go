@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/GoCodeAlone/workflow-plugin-security-scanner/internal/contracts"
@@ -201,6 +202,52 @@ func TestTypedContainerStepRejectsUnsupportedScanner(t *testing.T) {
 	})
 	if err == nil {
 		t.Fatal("typedContainerScan accepted unsupported container scanner")
+	}
+}
+
+func TestTypedContainerStepPreservesExplicitFalseInput(t *testing.T) {
+	values := mergeConfigs(
+		containerConfigToMap(&contracts.ContainerScanConfig{IgnoreUnfixed: true}),
+		containerInputToMap(&contracts.ContainerScanInput{IgnoreUnfixed: false}),
+	)
+	if got, ok := values["ignore_unfixed"].(bool); !ok || got {
+		t.Fatalf("ignore_unfixed = %#v, want explicit false override", values["ignore_unfixed"])
+	}
+}
+
+func TestScanStepDispatchUsesCurrentOverride(t *testing.T) {
+	step, err := newScanStep("step.sast_scan", "sast", map[string]any{"scanner": "semgrep"})
+	if err != nil {
+		t.Fatalf("newScanStep: %v", err)
+	}
+	result, err := step.Execute(context.Background(), nil, nil,
+		map[string]any{"scanner": "mock", "source_path": "./current"},
+		nil,
+		map[string]any{"source_path": "./config"},
+	)
+	if err != nil {
+		t.Fatalf("Execute: %v", err)
+	}
+	if got, _ := result.Output["scanner"].(string); got != "mock" {
+		t.Fatalf("scanner = %q, want current override mock", got)
+	}
+}
+
+func TestScanStepRejectsUnknownScannerForEachStepType(t *testing.T) {
+	for _, stepType := range []string{"step.sast_scan", "step.container_scan", "step.deps_scan"} {
+		t.Run(stepType, func(t *testing.T) {
+			step, err := newScanStep(stepType, "scan", nil)
+			if err != nil {
+				t.Fatalf("newScanStep: %v", err)
+			}
+			_, err = step.Execute(context.Background(), nil, nil, map[string]any{"scanner": "typo-scanner"}, nil, nil)
+			if err == nil {
+				t.Fatal("expected unknown scanner error")
+			}
+			if !strings.Contains(err.Error(), "unsupported scanner") {
+				t.Fatalf("error = %v, want unsupported scanner", err)
+			}
+		})
 	}
 }
 
