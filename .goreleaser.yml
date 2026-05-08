@@ -35,6 +35,7 @@ archives:
       - LICENSE
 
 release:
+  draft: true
   github:
     owner: GoCodeAlone
     name: workflow-plugin-security-scanner
