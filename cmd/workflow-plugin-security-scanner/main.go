@@ -10,5 +10,5 @@ import (
 )
 
 func main() {
-	sdk.Serve(internal.NewSecurityScannerPlugin())
+	sdk.Serve(internal.NewSecurityScannerPlugin(), sdk.WithBuildVersion(sdk.ResolveBuildVersion(internal.Version)))
 }
