@@ -35,12 +35,11 @@ archives:
       - LICENSE
 
 release:
-  draft: true
+  draft: false
+  prerelease: false
   github:
     owner: GoCodeAlone
     name: workflow-plugin-security-scanner
-  draft: false
-  prerelease: false
 
 checksum:
   name_template: "checksums.txt"
