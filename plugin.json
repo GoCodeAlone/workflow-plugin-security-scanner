@@ -6,7 +6,7 @@
     "license": "Apache-2.0",
     "type": "external",
     "tier": "core",
-    "minEngineVersion": "0.51.7",
+    "minEngineVersion": "0.83.0",
     "keywords": ["security", "scanning", "sast", "semgrep", "trivy", "grype", "vulnerability"],
     "homepage": "https://github.com/GoCodeAlone/workflow-plugin-security-scanner",
     "repository": "https://github.com/GoCodeAlone/workflow-plugin-security-scanner",
